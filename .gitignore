@@ -1,160 +1,121 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import pygame
+import random
 
-# C extensions
-*.so
+# Inicialização do Pygame
+pygame.init()
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Definição das cores
+COR_BRANCA = (255, 255, 255)
+COR_PRETA = (0, 0, 0)
+COR_VERDE = (0, 255, 0)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# Definição da largura e altura da tela
+largura_tela = 800
+altura_tela = 600
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Criação da tela
+tela = pygame.display.set_mode((largura_tela, altura_tela))
+pygame.display.set_caption("Jogo de Química")
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+# Classe para representar uma pergunta
+class Pergunta:
+    def __init__(self, texto, opcoes, resposta):
+        self.texto = texto
+        self.opcoes = opcoes
+        self.resposta = resposta
 
-# Translations
-*.mo
-*.pot
+# Lista de perguntas
+perguntas = [
+    Pergunta("Qual é o símbolo químico do oxigênio?", ["A) O", "B) Ox", "C) Oxg", "D) O2"], "A"),
+    Pergunta("Quantos elétrons tem um átomo de hidrogênio?", ["A) 1", "B) 2", "C) 3", "D) 0"], "A"),
+    Pergunta("Qual é o número atômico do carbono?", ["A) 12", "B) 6", "C) 8", "D) 10"], "B"),
+    Pergunta("Qual é a fórmula química da água?", ["A) H2O2", "B) CO2", "C) H2O", "D) O2"], "C"),
+    Pergunta("Qual é o símbolo químico do ferro?", ["A) F", "B) Fr", "C) Fe", "D) Fo"], "C"),
+    Pergunta("Qual é a fórmula química do ácido sulfúrico?", ["A) H2SO3", "B) H2SO4", "C) H2S", "D) HSO4"], "B"),
+    Pergunta("Qual é o número atômico do sódio?", ["A) 11", "B) 12", "C) 13", "D) 14"], "A"),
+    Pergunta("O que é uma reação de neutralização?", ["A) A combinação de ácido e base para formar um sal e água.",
+                                                   "B) A quebra de um composto em seus elementos constituintes.",
+                                                   "C) A transformação de um sólido em um líquido.",
+                                                   "D) A combustão de um combustível orgânico."], "A"),
+    Pergunta("O que é um isótopo?", ["A) Átomos de diferentes elementos com o mesmo número atômico.",
+                                    "B) Átomos de diferentes elementos com o mesmo número de massa.",
+                                    "C) Átomos do mesmo elemento com o mesmo número atômico, mas diferente número de massa.",
+                                    "D) Átomos do mesmo elemento com o mesmo número de massa, mas diferente número atômico."], "C")
+]
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# Variáveis do jogo
+pontuacao = 0
+pergunta_atual = None
 
-# Flask stuff:
-instance/
-.webassets-cache
+# Função para exibir uma pergunta na tela
+def exibir_pergunta(pergunta):
+    tela.fill(COR_BRANCA)
+    fonte = pygame.font.Font(None, 36)
+    texto_pergunta = fonte.render(pergunta.texto, True, COR_PRETA)
+    tela.blit(texto_pergunta, (50, 50))
 
-# Scrapy stuff:
-.scrapy
+    opcao_y = 150
+    for opcao in pergunta.opcoes:
+        texto_opcao = fonte.render(opcao, True, COR_PRETA)
+        tela.blit(texto_opcao, (50, opcao_y))
+        opcao_y += 50
 
-# Sphinx documentation
-docs/_build/
+# Função para exibir a pontuação na tela
+def exibir_pontuacao():
+    fonte = pygame.font.Font(None, 36)
+    texto_pontuacao = fonte.render("Pontuação: " + str(pontuacao), True, COR_PRETA)
+    tela.blit(texto_pontuacao, (50, 400))
 
-# PyBuilder
-.pybuilder/
-target/
+# Função para exibir a resposta correta na tela
+def exibir_resposta_correta(pergunta):
+    fonte = pygame.font.Font(None, 36)
+    resposta_correta = "Resposta correta: " + pergunta.resposta
+    texto_resposta = fonte.render(resposta_correta, True, COR_VERDE)
+    tela.blit(texto_resposta, (50, 450))
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Loop principal do jogo
+executando = True
+indice_pergunta = 0
 
-# IPython
-profile_default/
-ipython_config.py
+while executando:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            executando = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                if pergunta_atual and pergunta_atual.resposta == "A":
+                    pontuacao += 1
+                indice_pergunta += 1
+            elif event.key == pygame.K_b:
+                if pergunta_atual and pergunta_atual.resposta == "B":
+                    pontuacao += 1
+                indice_pergunta += 1
+            elif event.key == pygame.K_c:
+                if pergunta_atual and pergunta_atual.resposta == "C":
+                    pontuacao += 1
+                indice_pergunta += 1
+            elif event.key == pygame.K_d:
+                if pergunta_atual and pergunta_atual.resposta == "D":
+                    pontuacao += 1
+                indice_pergunta += 1
+    
+    tela.fill(COR_BRANCA)
+    
+    if indice_pergunta < len(perguntas):
+        pergunta_atual = perguntas[indice_pergunta]
+        exibir_pergunta(pergunta_atual)
+    else:
+        pergunta_atual = None
+        fonte = pygame.font.Font(None, 36)
+        texto_fim = fonte.render("Fim do jogo. Pontuação final: " + str(pontuacao), True, COR_PRETA)
+        tela.blit(texto_fim, (50, 50))
+    
+    exibir_pontuacao()
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+    if pergunta_atual is not None:
+        exibir_resposta_correta(pergunta_atual)
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+    pygame.display.flip()
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+# Encerramento do Pygame
+pygame.quit()
